@@ -1,5 +1,6 @@
 # IPT101A JobHunt Gathering Ideas
-Semi-FULL STACK JOB PORTAL WEBSITE - HTML, CSS, JAVASCRIPT
+Semi-Fullstack Job Portal Website - Html, Css, Javascript
+Please check latest deployment pages for checking!
 
 THIS IS FINAL PROJECT FOR IPT101 A
 
