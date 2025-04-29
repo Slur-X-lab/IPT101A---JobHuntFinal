@@ -1,0 +1,1059 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+    <title>IPT101A | JobHunt - Browse Jobs</title>
+    <style>
+      .browse__container {
+        padding: 80px 0;
+      }
+      
+      .search__bar {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 40px;
+        max-width: 800px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      
+      .search__bar input {
+        flex: 1;
+        padding: 15px;
+        border: 1px solid #e2e2e2;
+        border-radius: 8px;
+        font-size: 16px;
+      }
+      
+      .search__bar .btn {
+        padding: 15px 25px;
+      }
+      
+      .filters {
+        display: flex;
+        gap: 20px;
+        margin-bottom: 40px;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+      
+      .filter__item {
+        padding: 10px 20px;
+        background-color: #f5f5f5;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+      
+      .filter__item:hover {
+        background-color: #e0e0e0;
+      }
+      
+      .filter__item.active {
+        background-color: #007bff;
+        color: white;
+      }
+      
+      .jobs__grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 25px;
+      }
+      
+      .job__card {
+        border: 1px solid #e2e2e2;
+        border-radius: 10px;
+        padding: 25px;
+        background-color: white;
+        transition: all 0.2s ease;
+      }
+      
+      .job__card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+      }
+      
+      .job__card__header {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 15px;
+      }
+      
+      .job__card__header img {
+        width: 50px;
+        height: 50px;
+        object-fit: contain;
+      }
+      
+      .job__card h4 {
+        margin-bottom: 15px;
+        font-size: 18px;
+        color: #333;
+      }
+      
+      .job__card p {
+        color: #666;
+        margin-bottom: 20px;
+        font-size: 14px;
+        line-height: 1.6;
+      }
+      
+      .job__card__footer {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 20px;
+      }
+      
+      .job__card__footer span {
+        background-color: #f5f5f5;
+        padding: 5px 10px;
+        border-radius: 5px;
+        font-size: 12px;
+        color: #555;
+      }
+      
+      .job__apply {
+        display: block;
+        background-color: #007bff;
+        color: white;
+        padding: 10px;
+        text-align: center;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.2s ease;
+      }
+      
+      .job__apply:hover {
+        background-color: #0056b3;
+      }
+      
+      .pagination {
+        display: flex;
+        justify-content: center;
+        margin-top: 50px;
+        gap: 10px;
+      }
+      
+      .pagination span {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        background-color: #f5f5f5;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+      
+      .pagination span:hover,
+      .pagination span.active {
+        background-color: #007bff;
+        color: white;
+      }
+
+      .job__modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.5);
+    animation: fadeIn 0.3s;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  
+  .job__modal__content {
+    background-color: #fff;
+    margin: 5% auto;
+    max-width: 800px;
+    width: 90%;
+    border-radius: 10px;
+    box-shadow: 0 5px 30px rgba(0, 0, 0, 0.3);
+    position: relative;
+    animation: slideIn 0.4s;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+  
+  @keyframes slideIn {
+    from { transform: translateY(-50px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+  
+  .job__modal__close {
+    position: absolute;
+    right: 20px;
+    top: 15px;
+    font-size: 28px;
+    font-weight: bold;
+    color: #aaa;
+    cursor: pointer;
+    z-index: 10;
+    transition: color 0.3s;
+  }
+  
+  .job__modal__close:hover {
+    color: #333;
+  }
+  
+  .job__modal__header {
+    padding: 25px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    border-bottom: 1px solid #e2e2e2;
+  }
+  
+  .job__modal__header img {
+    width: 70px;
+    height: 70px;
+    object-fit: contain;
+  }
+  
+  .job__modal__header h3 {
+    font-size: 24px;
+    margin-bottom: 10px;
+    color: #333;
+  }
+  
+  .job__modal__company {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+  
+  .job__modal__company h5 {
+    font-size: 18px;
+    color: #555;
+  }
+  
+  .job__modal__company h6 {
+    font-size: 16px;
+    color: #777;
+  }
+  
+  .job__modal__details {
+    padding: 25px;
+  }
+  
+  .job__modal__info {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+    margin-bottom: 25px;
+  }
+  
+  .job__modal__info span {
+    background-color: #f5f5f5;
+    padding: 8px 15px;
+    border-radius: 5px;
+    font-size: 14px;
+    color: #555;
+  }
+  
+  .job__modal__description h4 {
+    font-size: 18px;
+    margin-bottom: 15px;
+    margin-top: 25px;
+    color: #333;
+  }
+  
+  .job__modal__description p {
+    color: #666;
+    line-height: 1.7;
+    margin-bottom: 20px;
+  }
+  
+  .job__modal__description ul {
+    padding-left: 20px;
+    margin-bottom: 25px;
+  }
+  
+  .job__modal__description li {
+    margin-bottom: 10px;
+    color: #666;
+    line-height: 1.6;
+  }
+  
+  .job__modal__apply {
+    display: block;
+    width: 100%;
+    padding: 15px;
+    font-size: 16px;
+    margin-top: 30px;
+  }
+  
+  
+  .job__card {
+    cursor: pointer;
+  }
+  
+ 
+  .job__card .job__apply {
+    cursor: pointer;
+    position: relative;
+    z-index: 2;
+  }
+
+    </style>
+  </head>
+  <body>
+    <nav>
+      <div class="nav__header">
+        <div class="nav__logo">
+          <a href="index.html" class="logo">Job<span>Hunt</span></a>
+        </div>
+        <div class="nav__menu__btn" id="menu-btn">
+          <i class="ri-menu-line"></i>
+        </div>
+      </div>
+      <ul class="nav__links" id="nav-links">
+        <li><a href="index.html#home">Home</a></li>
+        <li><a href="index.html#about">About</a></li>
+        <li><a href="index.html#job">Jobs</a></li>
+        <li><a href="index.html#service">Services</a></li>
+        <li><a href="index.html#client">Client</a></li>
+        <li><button class="btn">Register</button></li>
+      </ul>
+    </nav>
+
+    <section class="section__container browse__container">
+      <h2 class="section__header">Browse <span>All Jobs</span></h2>
+      <p class="section__description">
+        Find your perfect career opportunity from our extensive collection of job listings
+      </p>
+
+      <div class="search__bar">
+        <input type="text" placeholder="Search for job titles, companies, or keywords..." id="job-search">
+        <button class="btn" id="search-btn">Search</button>
+      </div>
+
+      <div class="filters">
+        <div class="filter__item active">All</div>
+        <div class="filter__item">Full Time</div>
+        <div class="filter__item">Part Time</div>
+        <div class="filter__item">Remote</div>
+        <div class="filter__item">Entry Level</div>
+        <div class="filter__item">Senior Level</div>
+      </div>
+
+      <div class="jobs__grid" id="jobs-container">
+        
+        <div class="job__card" data-keywords="senior product engineer figma design tech">
+          <div class="job__card__header">
+            <img src="assets/figma.png" alt="Figma logo" />
+            <div>
+              <h5>Figma</h5>
+              <h6>USA</h6>
+            </div>
+          </div>
+          <h4>Senior Product Engineer</h4>
+          <p>
+            Lead the development of innovative product solutions, leveraging
+            your expertise in engineering and product management to drive
+            success.
+          </p>
+          <div class="job__card__footer">
+            <span>12 Positions</span>
+            <span>Full Time</span>
+            <span>$145,000/Year</span>
+          </div>
+          <a href="#" class="job__apply">Apply Now</a>
+        </div>
+
+        
+        <div class="job__card" data-keywords="project manager google management tech">
+          <div class="job__card__header">
+            <img src="assets/google.png" alt="Google logo" />
+            <div>
+              <h5>Google</h5>
+              <h6>USA</h6>
+            </div>
+          </div>
+          <h4>Project Manager</h4>
+          <p>
+            Manage project timelines and budgets to ensure successful delivery
+            of projects on schedule, while maintaining clear communication with
+            stakeholders.
+          </p>
+          <div class="job__card__footer">
+            <span>2 Positions</span>
+            <span>Full Time</span>
+            <span>$95,000/Year</span>
+          </div>
+          <a href="#" class="job__apply">Apply Now</a>
+        </div>
+
+        
+        <div class="job__card" data-keywords="full stack developer linkedin coding programming">
+          <div class="job__card__header">
+            <img src="assets/linkedin.png" alt="LinkedIn logo" />
+            <div>
+              <h5>LinkedIn</h5>
+              <h6>Germany</h6>
+            </div>
+          </div>
+          <h4>Full Stack Developer</h4>
+          <p>
+            Develop and maintain both front-end and back-end components of web
+            applications, utilizing a wide range of programming languages and
+            frameworks.
+          </p>
+          <div class="job__card__footer">
+            <span>10 Positions</span>
+            <span>Full Time</span>
+            <span>$35,000/Year</span>
+          </div>
+          <a href="#" class="job__apply">Apply Now</a>
+        </div>
+
+        
+        <div class="job__card" data-keywords="frontend developer amazon coding programming">
+          <div class="job__card__header">
+            <img src="assets/amazon.png" alt="Amazon logo" />
+            <div>
+              <h5>Amazon</h5>
+              <h6>USA</h6>
+            </div>
+          </div>
+          <h4>Front-end Developer</h4>
+          <p>
+            Design and implement user interfaces using HTML, CSS, and
+            JavaScript, collaborating closely with designers and back-end
+            developers.
+          </p>
+          <div class="job__card__footer">
+            <span>20 Positions</span>
+            <span>Full Time</span>
+            <span>$101,000/Year</span>
+          </div>
+          <a href="#" class="job__apply">Apply Now</a>
+        </div>
+
+        
+        <div class="job__card" data-keywords="reactjs developer twitter coding programming">
+          <div class="job__card__header">
+            <img src="assets/twitter.png" alt="Twitter logo" />
+            <div>
+              <h5>Twitter</h5>
+              <h6>USA</h6>
+            </div>
+          </div>
+          <h4>ReactJS Developer</h4>
+          <p>
+            Specialize in building dynamic and interactive user interfaces using
+            the ReactJS library, leveraging your expertise in JavaScript and
+            front-end development.
+          </p>
+          <div class="job__card__footer">
+            <span>6 Positions</span>
+            <span>Full Time</span>
+            <span>$98,000/Year</span>
+          </div>
+          <a href="#" class="job__apply">Apply Now</a>
+        </div>
+
+        
+        <div class="job__card" data-keywords="python developer microsoft coding programming">
+          <div class="job__card__header">
+            <img src="assets/microsoft.png" alt="Microsoft logo" />
+            <div>
+              <h5>Microsoft</h5>
+              <h6>USA</h6>
+            </div>
+          </div>
+          <h4>Python Developer</h4>
+          <p>
+            Develop scalable and efficient backend systems and applications
+            using Python, utilizing your proficiency in Python programming and
+            software development.
+          </p>
+          <div class="job__card__footer">
+            <span>9 Positions</span>
+            <span>Full Time</span>
+            <span>$80,000/Year</span>
+          </div>
+          <a href="#" class="job__apply">Apply Now</a>
+        </div>
+
+        
+        <div class="job__card" data-keywords="ux ui designer google design">
+          <div class="job__card__header">
+            <img src="assets/google.png" alt="Google logo" />
+            <div>
+              <h5>Google</h5>
+              <h6>Canada</h6>
+            </div>
+          </div>
+          <h4>UX/UI Designer</h4>
+          <p>
+            Create intuitive and visually appealing user interfaces that enhance user experience across web and mobile platforms, collaborating with product teams to implement design solutions.
+          </p>
+          <div class="job__card__footer">
+            <span>5 Positions</span>
+            <span>Full Time</span>
+            <span>$90,000/Year</span>
+          </div>
+          <a href="#" class="job__apply">Apply Now</a>
+        </div>
+
+        
+        <div class="job__card" data-keywords="data scientist amazon analytics tech">
+          <div class="job__card__header">
+            <img src="assets/amazon.png" alt="Amazon logo" />
+            <div>
+              <h5>Amazon</h5>
+              <h6>Germany</h6>
+            </div>
+          </div>
+          <h4>Data Scientist</h4>
+          <p>
+            Analyze large datasets to extract meaningful insights, develop predictive models, and drive data-informed business decisions using statistical analysis and machine learning techniques.
+          </p>
+          <div class="job__card__footer">
+            <span>8 Positions</span>
+            <span>Remote</span>
+            <span>$115,000/Year</span>
+          </div>
+          <a href="#" class="job__apply">Apply Now</a>
+        </div>
+
+        
+        <div class="job__card" data-keywords="digital marketing manager twitter marketing">
+          <div class="job__card__header">
+            <img src="assets/twitter.png" alt="Twitter logo" />
+            <div>
+              <h5>Twitter</h5>
+              <h6>UK</h6>
+            </div>
+          </div>
+          <h4>Digital Marketing Manager</h4>
+          <p>
+            Develop and implement comprehensive digital marketing strategies to increase brand awareness, generate leads, and enhance online presence across multiple digital channels.
+          </p>
+          <div class="job__card__footer">
+            <span>3 Positions</span>
+            <span>Full Time</span>
+            <span>$75,000/Year</span>
+          </div>
+          <a href="#" class="job__apply">Apply Now</a>
+        </div>
+
+        
+        <div class="job__card" data-keywords="cloud architect microsoft tech infrastructure">
+          <div class="job__card__header">
+            <img src="assets/microsoft.png" alt="Microsoft logo" />
+            <div>
+              <h5>Microsoft</h5>
+              <h6>Singapore</h6>
+            </div>
+          </div>
+          <h4>Cloud Solutions Architect</h4>
+          <p>
+            Design and implement cloud-based infrastructure solutions, providing technical leadership on cloud projects and ensuring optimal performance, scalability, and security of cloud environments.
+          </p>
+          <div class="job__card__footer">
+            <span>4 Positions</span>
+            <span>Full Time</span>
+            <span>$130,000/Year</span>
+          </div>
+          <a href="#" class="job__apply">Apply Now</a>
+        </div>
+
+        
+        <div class="job__card" data-keywords="content writer linkedin writing">
+          <div class="job__card__header">
+            <img src="assets/linkedin.png" alt="LinkedIn logo" />
+            <div>
+              <h5>LinkedIn</h5>
+              <h6>India</h6>
+            </div>
+          </div>
+          <h4>Content Writer</h4>
+          <p>
+            Create engaging and SEO-optimized content for various platforms, including blogs, social media, and websites, researching topics and maintaining brand voice across all content.
+          </p>
+          <div class="job__card__footer">
+            <span>15 Positions</span>
+            <span>Part Time</span>
+            <span>$45,000/Year</span>
+          </div>
+          <a href="#" class="job__apply">Apply Now</a>
+        </div>
+
+        
+        <div class="job__card" data-keywords="product manager figma management tech">
+          <div class="job__card__header">
+            <img src="assets/figma.png" alt="Figma logo" />
+            <div>
+              <h5>Figma</h5>
+              <h6>Remote</h6>
+            </div>
+          </div>
+          <h4>Product Manager</h4>
+          <p>
+            Define product vision and strategy, working closely with engineering, design, and marketing teams to deliver products that meet user needs and business objectives.
+          </p>
+          <div class="job__card__footer">
+            <span>7 Positions</span>
+            <span>Remote</span>
+            <span>$120,000/Year</span>
+          </div>
+          <a href="#" class="job__apply">Apply Now</a>
+        </div>
+
+        
+        <div class="job__card" data-keywords="devops engineer amazon tech infrastructure">
+          <div class="job__card__header">
+            <img src="assets/amazon.png" alt="Amazon logo" />
+            <div>
+              <h5>Amazon</h5>
+              <h6>Canada</h6>
+            </div>
+          </div>
+          <h4>DevOps Engineer</h4>
+          <p>
+            Build and maintain CI/CD pipelines, automate deployment processes, and ensure the reliability and performance of infrastructure while collaborating with development teams.
+          </p>
+          <div class="job__card__footer">
+            <span>11 Positions</span>
+            <span>Full Time</span>
+            <span>$105,000/Year</span>
+          </div>
+          <a href="#" class="job__apply">Apply Now</a>
+        </div>
+
+        
+        <div class="job__card" data-keywords="hr manager google human resources">
+          <div class="job__card__header">
+            <img src="assets/google.png" alt="Google logo" />
+            <div>
+              <h5>Google</h5>
+              <h6>Australia</h6>
+            </div>
+          </div>
+          <h4>HR Manager</h4>
+          <p>
+            Develop and implement HR strategies and initiatives aligned with the overall business strategy, managing the recruitment process and fostering a positive work environment.
+          </p>
+          <div class="job__card__footer">
+            <span>2 Positions</span>
+            <span>Full Time</span>
+            <span>$85,000/Year</span>
+          </div>
+          <a href="#" class="job__apply">Apply Now</a>
+        </div>
+
+        <div class="job__card" data-keywords="mobile app developer microsoft coding programming">
+          <div class="job__card__header">
+            <img src="assets/microsoft.png" alt="Microsoft logo" />
+            <div>
+              <h5>Microsoft</h5>
+              <h6>Japan</h6>
+            </div>
+          </div>
+          <h4>Mobile App Developer</h4>
+          <p>
+            Design and build advanced applications for the iOS or Android platform, working on debugging and improving application performance while ensuring the best user experience.
+          </p>
+          <div class="job__card__footer">
+            <span>6 Positions</span>
+            <span>Full Time</span>
+            <span>$95,000/Year</span>
+          </div>
+          <a href="#" class="job__apply">Apply Now</a>
+        </div>
+      </div>
+
+      <div class="pagination">
+        <span class="active">1</span>
+        <span>2</span>
+        <span>3</span>
+        <span><i class="ri-arrow-right-s-line"></i></span>
+      </div>
+    </section>
+
+    <div class="job__modal" id="job-modal">
+      <div class="job__modal__content">
+        <span class="job__modal__close">&times;</span>
+        <div class="job__modal__header">
+          <img src="" alt="Company logo" id="modal-company-logo">
+          <div>
+            <h3 id="modal-job-title"></h3>
+            <div class="job__modal__company">
+              <h5 id="modal-company-name"></h5>
+              <h6 id="modal-job-location"></h6>
+            </div>
+          </div>
+        </div>
+        
+        <div class="job__modal__details">
+          <div class="job__modal__info">
+            <span id="modal-positions"></span>
+            <span id="modal-job-type"></span>
+            <span id="modal-salary"></span>
+          </div>
+          
+          <div class="job__modal__description">
+            <h4>Job Description</h4>
+            <p id="modal-description"></p>
+            
+            <h4>Requirements</h4>
+            <ul id="modal-requirements">
+             
+            </ul>
+            
+            <h4>Benefits</h4>
+            <ul id="modal-benefits">
+
+            </ul>
+          </div>
+          
+          <a href="#" class="job__apply job__modal__apply" id="modal-apply">Apply Now</a>
+        </div>
+      </div>
+    </div>
+
+    <footer class="footer">
+      <div class="section__container footer__container">
+        <div class="footer__col">
+          <div class="footer__logo">
+            <a href="#" class="logo">Job<span>Hunt</span></a>
+          </div>
+          <p>
+            Our platform is designed to help you find the perfect job and
+            achieve your professional dreams.
+          </p>
+        </div>
+        <div class="footer__col">
+          <h4>Quick Links</h4>
+          <ul class="footer__links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="index.html#about">About Us</a></li>
+            <li><a href="index.html#job">Jobs</a></li>
+            <li><a href="index.html#client">Testimonials</a></li>
+            <li><a href="#">Contact Us</a></li>
+          </ul>
+        </div>
+        <div class="footer__col">
+          <h4>Follow Us</h4>
+          <ul class="footer__links">
+            <li><a href="#">Facebook</a></li>
+            <li><a href="#">Instagram</a></li>
+            <li><a href="#">LinkedIn</a></li>
+            <li><a href="#">Twitter</a></li>
+            <li><a href="#">Youtube</a></li>
+          </ul>
+        </div>
+        <div class="footer__col">
+          <h4>Contact Us</h4>
+          <ul class="footer__links">
+            <li>
+              <a href="#">
+                <span><i class="ri-phone-fill"></i></span> +63 9155897101
+              </a>
+            </li>
+            <li>
+              <a href="#">
+                <span><i class="ri-map-pin-2-fill"></i></span> Dao, Tagbilaran City, Bohol
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer__bar">
+        Copyright © 2024 Web Design Mastery. All rights reserved.
+      </div>
+    </footer>
+
+    <script src="https://unpkg.com/scrollreveal"></script>
+    <script>
+      const menuBtn = document.getElementById("menu-btn");
+      const navLinks = document.getElementById("nav-links");
+      const menuBtnIcon = menuBtn.querySelector("i");
+      
+      menuBtn.addEventListener("click", (e) => {
+        navLinks.classList.toggle("open");
+        const isOpen = navLinks.classList.contains("open");
+        menuBtnIcon.setAttribute("class", isOpen ? "ri-close-line" : "ri-menu-line");
+      });
+      
+      navLinks.addEventListener("click", (e) => {
+        navLinks.classList.remove("open");
+        menuBtnIcon.setAttribute("class", "ri-menu-line");
+      });
+      
+    
+      const searchInput = document.getElementById("job-search");
+      const searchBtn = document.getElementById("search-btn");
+      const jobsContainer = document.getElementById("jobs-container");
+      const jobCard = jobsContainer.querySelectorAll(".job__card");
+      
+      searchBtn.addEventListener("click", performSearch);
+      searchInput.addEventListener("keyup", function(event) {
+        if (event.key === "Enter") {
+          performSearch();
+        }
+      });
+      
+      function performSearch() {
+        const searchTerm = searchInput.value.toLowerCase().trim();
+        
+        jobCard.forEach(card => {
+          const keywords = card.getAttribute("data-keywords");
+          const title = card.querySelector("h4").textContent.toLowerCase();
+          const company = card.querySelector("h5").textContent.toLowerCase();
+          const description = card.querySelector("p").textContent.toLowerCase();
+          
+          const isMatch = 
+            keywords.includes(searchTerm) || 
+            title.includes(searchTerm) || 
+            company.includes(searchTerm) || 
+            description.includes(searchTerm);
+          
+          card.style.display = isMatch || searchTerm === "" ? "block" : "none";
+        });
+      }
+      
+      
+      const filterItems = document.querySelectorAll(".filter__item");
+      
+      filterItems.forEach(item => {
+        item.addEventListener("click", function() {
+         
+          filterItems.forEach(i => i.classList.remove("active"));
+          
+         
+          this.classList.add("active");
+          
+          const filter = this.textContent.toLowerCase();
+          
+          jobCards.forEach(card => {
+            const jobType = card.querySelector(".job__card__footer span:nth-child(2)").textContent.toLowerCase();
+            
+            if (filter === "all") {
+              card.style.display = "block";
+            } else {
+              card.style.display = jobType.includes(filter) ? "block" : "none";
+            }
+          });
+        });
+      });
+      
+     
+      const paginationItems = document.querySelectorAll(".pagination span");
+      
+      paginationItems.forEach(item => {
+        item.addEventListener("click", function() {
+          paginationItems.forEach(i => i.classList.remove("active"));
+          this.classList.add("active");
+          
+         
+          window.scrollTo({top: 0, behavior: "smooth"});
+        });
+      });
+      
+     
+      const scrollRevealOption = {
+        distance: "50px",
+        origin: "bottom",
+        duration: 1000,
+      };
+      
+      ScrollReveal().reveal(".section__header", scrollRevealOption);
+      ScrollReveal().reveal(".section__description", {
+        ...scrollRevealOption,
+        delay: 500
+      });
+      ScrollReveal().reveal(".search__bar", {
+        ...scrollRevealOption,
+        delay: 700
+      });
+      ScrollReveal().reveal(".filters", {
+        ...scrollRevealOption,
+        delay: 900
+      });
+      ScrollReveal().reveal(".job__card", {
+        ...scrollRevealOption,
+        delay: 1100,
+        interval: 200
+      });
+
+      const modal = document.getElementById("job-modal");
+  const modalClose = document.querySelector(".job__modal__close");
+  
+
+  const jobDetails = {
+    "Senior Product Engineer": {
+      requirements: [
+        "5+ years of experience in product engineering",
+        "Strong knowledge of design systems and frameworks",
+        "Experience with collaborative design tools",
+        "Excellent problem-solving skills",
+        "Bachelor's degree in Engineering, Design, or related field"
+      ],
+      benefits: [
+        "Competitive salary and equity package",
+        "Health, dental, and vision insurance",
+        "Flexible work arrangements",
+        "Professional development budget",
+        "Generous vacation policy"
+      ],
+      fullDescription: "As a Senior Product Engineer at Figma, you will be responsible for designing and implementing innovative solutions that enhance our product's functionality and user experience. You'll collaborate closely with cross-functional teams to identify opportunities for improvement and lead the development of new features. Your technical expertise and product thinking will be essential in shaping the future of our design platform."
+    },
+    "Project Manager": {
+      requirements: [
+        "3+ years of experience in project management",
+        "PMP certification preferred",
+        "Experience with Agile methodologies",
+        "Strong communication and leadership skills",
+        "Experience with project management tools"
+      ],
+      benefits: [
+        "Comprehensive health benefits",
+        "401(k) matching",
+        "Stock options",
+        "Paid parental leave",
+        "Flexible work schedule"
+      ],
+      fullDescription: "As a Project Manager at Google, you'll be responsible for planning, executing, and closing projects on time and within budget. You'll coordinate internal resources and third parties for the flawless execution of projects, ensuring that all projects are delivered on time, within scope and within budget. You'll also be responsible for developing project scopes and objectives, involving all relevant stakeholders and ensuring technical feasibility."
+    },
+    "Full Stack Developer": {
+      requirements: [
+        "Experience with both front-end and back-end technologies",
+        "Proficiency in JavaScript, HTML, CSS",
+        "Knowledge of server-side frameworks",
+        "Database management skills",
+        "Experience with version control systems"
+      ],
+      benefits: [
+        "Remote work options",
+        "Health and wellness programs",
+        "Professional development opportunities",
+        "Employee discounts",
+        "Collaborative work environment"
+      ],
+      fullDescription: "As a Full Stack Developer at LinkedIn, you will design and develop both front-end and back-end components of our web applications. You'll work with a variety of programming languages and frameworks to create scalable and efficient solutions. Your role will involve collaborating with UX designers, product managers, and other developers to deliver exceptional user experiences that drive engagement on our platform."
+    }
+  };
+  
+ 
+  const defaultJobDetails = {
+    requirements: [
+      "Relevant experience in the field",
+      "Strong communication skills",
+      "Problem-solving abilities",
+      "Team collaboration",
+      "Knowledge of industry best practices"
+    ],
+    benefits: [
+      "Competitive salary",
+      "Health insurance",
+      "Retirement benefits",
+      "Professional development opportunities",
+      "Work-life balance"
+    ],
+    fullDescription: "This position offers an exciting opportunity to join a dynamic team and contribute to innovative projects. The ideal candidate will bring expertise, creativity, and a collaborative spirit to help drive our company forward. You'll work in a supportive environment that encourages growth and recognizes achievement."
+  };
+  
+  
+  const jobCards = document.querySelectorAll(".job__card");
+  
+  jobCards.forEach(card => {
+    card.addEventListener("click", function(e) {
+      
+      if (e.target.classList.contains('job__apply')) {
+        return;
+      }
+      
+      
+      const jobTitle = card.querySelector("h4").textContent;
+      const companyName = card.querySelector("h5").textContent;
+      const location = card.querySelector("h6").textContent;
+      const description = card.querySelector("p").textContent;
+      const logoSrc = card.querySelector("img").src;
+      
+    
+      const footerSpans = card.querySelectorAll(".job__card__footer span");
+      const positions = footerSpans[0].textContent;
+      const jobType = footerSpans[1].textContent;
+      const salary = footerSpans[2].textContent;
+      
+     
+      const details = jobDetails[jobTitle] || defaultJobDetails;
+      
+    
+      document.getElementById("modal-job-title").textContent = jobTitle;
+      document.getElementById("modal-company-name").textContent = companyName;
+      document.getElementById("modal-job-location").textContent = location;
+      document.getElementById("modal-company-logo").src = logoSrc;
+      document.getElementById("modal-positions").textContent = positions;
+      document.getElementById("modal-job-type").textContent = jobType;
+      document.getElementById("modal-salary").textContent = salary;
+      document.getElementById("modal-description").textContent = details.fullDescription;
+      
+     
+      const requirementsList = document.getElementById("modal-requirements");
+      requirementsList.innerHTML = "";
+      details.requirements.forEach(req => {
+        const li = document.createElement("li");
+        li.textContent = req;
+        requirementsList.appendChild(li);
+      });
+      
+      
+      const benefitsList = document.getElementById("modal-benefits");
+      benefitsList.innerHTML = "";
+      details.benefits.forEach(benefit => {
+        const li = document.createElement("li");
+        li.textContent = benefit;
+        benefitsList.appendChild(li);
+      });
+      
+     
+      modal.style.display = "block";
+      document.body.style.overflow = "hidden";
+    });
+  });
+  
+ 
+  modalClose.addEventListener("click", function() {
+    modal.style.display = "none";
+    document.body.style.overflow = "auto"; 
+  });
+  
+  
+  window.addEventListener("click", function(event) {
+    if (event.target === modal) {
+      modal.style.display = "none";
+      document.body.style.overflow = "auto"; 
+    }
+  });
+  
+ 
+  const applyButtons = document.querySelectorAll(".job__apply");
+  applyButtons.forEach(button => {
+    button.addEventListener("click", function(e) {
+      e.stopPropagation(); 
+    });
+  });
+
+    </script>
+  </body>
+</html>
