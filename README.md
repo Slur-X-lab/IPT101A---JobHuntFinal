@@ -1,4 +1,4 @@
-# IPT101A STARCPFFEE Final Project
+# IPT101A STARC0FFEE Final Project
 Semi-Fullstack Coffee Vendor Website - Html, Css, Javascript
 
 Please check latest deployment pages for checking!
