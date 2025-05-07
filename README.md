@@ -1,8 +1,6 @@
 # IPT101A STARC0FFEE Final Project
 Semi-Fullstack Coffee Vendor Website - Html, Css, Javascript
 
-Please check latest deployment pages for checking!
-
 THIS IS FINAL PROJECT FOR IPT101 A
 
 MEMBERS:
